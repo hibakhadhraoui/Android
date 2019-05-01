@@ -20,12 +20,12 @@ import android.view.ViewGroup;
 public class favoritesf extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+  //  private static final String ARG_PARAM1 = "param1";
+    //private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+   // private String mParam1;
+   // private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,8 +45,8 @@ public class favoritesf extends Fragment {
     public static favoritesf newInstance(String param1, String param2) {
         favoritesf fragment = new favoritesf();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+     //   args.putString(ARG_PARAM1, param1);
+      //  args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,10 +54,10 @@ public class favoritesf extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+      /*  if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        }*/
     }
 
     @Override
@@ -73,7 +73,7 @@ public class favoritesf extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
+/*
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -90,7 +90,7 @@ public class favoritesf extends Fragment {
         super.onDetach();
         mListener = null;
     }
-
+*/
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated

@@ -3,7 +3,9 @@ package com.example.bestoption;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -29,9 +31,20 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.bestoption.entity.User;
+import com.example.bestoption.interfaces.UserInetrface;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -58,24 +71,100 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
+    private EditText password;
+    private EditText email;
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
+    private User userr =new User();
     private View mLoginFormView;
-
+    private  static Retrofit retrofit = null;
+    public static final String BASE_URL= "http://192.168.43.227:1330/";
 
     public void login (View v ){
-        startActivity(new Intent(LoginActivity.this,mostKnown.class));
+        password = (EditText)findViewById(R.id.password);
+        email = (EditText)findViewById(R.id.email);
+        //startActivity(new Intent(LoginActivity.this,mostKnown.class));
 
+        auth(email.getText().toString(),password.getText().toString());
+
+
+    }
+    public Boolean auth (final String email , final String password){
+
+            if (retrofit==null){
+                retrofit = new Retrofit.Builder()
+                        .baseUrl(BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+            }
+        UserInetrface userInetrface = retrofit.create(UserInetrface.class);
+        Call<User> call = userInetrface.getall();
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if(response.body().getEmail().isEmpty()){
+                    Toast.makeText(getApplicationContext(),"wrong email or password",Toast.LENGTH_SHORT).show();
+
+                }else{
+                    SharedPreferences.Editor sh = getSharedPreferences("login",MODE_PRIVATE).edit();
+                    sh.putString("login","True");
+                    SharedPreferences.Editor sheditor = getSharedPreferences("user",MODE_PRIVATE).edit();
+                    sheditor.putString("name",response.body().getName());
+                    sheditor.putString("email",response.body().getEmail());
+                    sheditor.putString("lastname",response.body().getLastname());
+                    sheditor.putInt("id",response.body().getId());
+                    sheditor.commit();
+                    Gson gson = new Gson();
+                    String user = gson.toJson(response.body());
+                    sheditor.putString("user",user);
+                    sheditor.commit();
+                    startActivity(new Intent(LoginActivity.this,mostKnown.class));
+
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"connection failure",Toast.LENGTH_SHORT).show();
+
+            }
+/*
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = response.body();
+                    if (user.getName().isEmpty()){
+                        Toast.makeText(getApplicationContext(),"wrong email or password",Toast.LENGTH_SHORT).show();
+
+
+                    }
+
+                    else
+                        startActivity(new Intent(LoginActivity.this,mostKnown.class));
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+            Toast.makeText(getApplicationContext(),"failure",Toast.LENGTH_SHORT).show();
+            }
+       */
+        });
+
+        return true;
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        userr.setEmail("hiba@gmail.com");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        userr.setPassword("hiba");
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
